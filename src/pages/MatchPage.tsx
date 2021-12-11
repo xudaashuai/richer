@@ -43,16 +43,7 @@ function MatchPage() {
   );
 
   React.useEffect(() => {
-    console.log([
-      lobbyClient,
-      matchId,
-      name,
-      navigate,
-      playerCredentials,
-      playerID,
-      setPlayerCredentials,
-      setPlayerID
-    ]);
+    console.log([lobbyClient, matchId, name, navigate, playerCredentials, playerID, gameClient]);
     async function enterMatch() {
       if (gameClient) {
         return;
@@ -68,7 +59,7 @@ function MatchPage() {
               server: SERVER
             }),
             matchID: matchId,
-            playerID: playerID,
+            playerID: `${selfInRoom.id}`,
             credentials: playerCredentials,
             debug: true
           });
