@@ -49,7 +49,7 @@ export const Richer: Game<GameData> = {
       G.actions[ctx.currentPlayer] = [{ type: '前进！' }];
     },
     endIf(G, ctx) {
-      return isEmpty(G.actions[ctx.currentPlayer]);
+      return isEmpty(G.actions[ctx.currentPlayer]?.filter((item) => item.type !== '结束回合'));
     },
     stages: {
       action: {
@@ -67,12 +67,9 @@ export const Richer: Game<GameData> = {
       }
     }
   },
-
-  moves: {},
   endIf: (G, ctx) => {
     const activePlayers = Object.values(G.players).filter((p) => p.money > 0);
     if (activePlayers.length === 1) {
-      sendMessage(`胜利啦！`, G, ctx, activePlayers[0].name);
       return {
         winner: activePlayers[0].name
       };
