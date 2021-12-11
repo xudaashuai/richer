@@ -81,8 +81,6 @@ function MatchPage() {
             playerName: name,
             playerID: `${freeSeat.id}`
           });
-          setPlayerID(match.playerID);
-          setPlayerCredentials(match.playerCredentials);
           const gameClient = Client<GameData>({
             game: Richer,
             multiplayer: SocketIO({
@@ -94,6 +92,8 @@ function MatchPage() {
             debug: true
           });
           setGameClient(gameClient);
+          setPlayerID(match.playerID);
+          setPlayerCredentials(match.playerCredentials);
         }
       } catch (e) {
         // 加入房间失败，返回列表页面
