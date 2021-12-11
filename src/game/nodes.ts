@@ -64,12 +64,12 @@ export type MapNode =
   | PowerNode
   | StartNode
   | SubwayNode
-  | { type: MapNodeType.EMPTY };
+  | { type: MapNodeType.EMPTY; position?: number };
 
 export const ValidBuildingTypes = {
-  [MapNodeType.工业]: [BuildingType.甜品工厂],
-  [MapNodeType.商业]: [BuildingType.甜品店],
-  [MapNodeType.住宅]: [BuildingType.蛋蛋屋]
+  [MapNodeType.工业]: [BuildingType.甜品工厂, BuildingType.木材厂, BuildingType.钢铁厂],
+  [MapNodeType.商业]: [BuildingType.甜品店, BuildingType.家具城, BuildingType.五金店],
+  [MapNodeType.住宅]: [BuildingType.蛋蛋屋, BuildingType.复古木屋, BuildingType.轻钢别墅]
 };
 
 export function createBuildingNode(

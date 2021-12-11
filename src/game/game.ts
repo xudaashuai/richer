@@ -6,7 +6,7 @@ import { createDefaultMap, GameMap } from './map/map';
 import { BuildingNode, MapNode, MapNodeType } from './nodes';
 import { createPlayer } from './players';
 import { Player } from './players';
-import { getCurrentPlayer, updatePlayerMoney } from './utils';
+import { getCurrentPlayer, sendMessage, updatePlayerMoney } from './utils';
 
 export interface GameData {
   map: GameMap;
@@ -23,6 +23,7 @@ export interface Message {
   content: string;
   timestamp: number;
   owner: string;
+  uuid: string;
 }
 
 export const Richer: Game<GameData> = {
@@ -68,10 +69,13 @@ export const Richer: Game<GameData> = {
   },
 
   moves: {},
-  endIf: (G) => {
+  endIf: (G, ctx) => {
     const activePlayers = Object.values(G.players).filter((p) => p.money > 0);
     if (activePlayers.length === 1) {
-      console.log(`游戏结束 胜利者是 ${activePlayers[0].name}`);
+      sendMessage(`胜利啦！`, G, ctx, activePlayers[0].name);
+      return {
+        winner: activePlayers[0].name
+      };
     }
   }
 };
@@ -98,6 +102,7 @@ function handleArrivalBuildingNode(G: GameData, ctx: Ctx, node: BuildingNode, pl
     if (player.money > node.cost) {
       actions = node.validBuildingTypes.map((type) => ({
         type: '购买',
+        content: `建造${type}，花费 ${node.cost}`,
         payload: {
           buildingType: type
         }
@@ -114,14 +119,9 @@ function handleArrivalBuildingNode(G: GameData, ctx: Ctx, node: BuildingNode, pl
   }
   // 别人的地
   else {
-    const cost = FEE[node.buildingType][node.level];
-    if (cost >= player.money) {
-      updatePlayerMoney(G, ctx, owner, player.money);
-      updatePlayerMoney(G, ctx, player, -player.money);
-      ctx.events.endTurn();
-      return;
-    }
+    const cost = Math.min(FEE[node.buildingType][node.level], player.money);
 
+    sendMessage(`到达 ${node.position} 支付过路费 ${cost}`, G, ctx);
     updatePlayerMoney(G, ctx, owner, cost);
     updatePlayerMoney(G, ctx, player, -cost);
   }

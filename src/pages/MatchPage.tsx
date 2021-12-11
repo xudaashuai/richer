@@ -67,7 +67,9 @@ function MatchPage() {
         } else {
           // 试图加入房间
           const freeSeat = matchData.players.find((player) => !player.name);
-
+          if (!freeSeat) {
+            throw new Error('没有座位啦');
+          }
           const match = await lobbyClient.joinMatch('richer', matchId, {
             playerName: name,
             playerID: `${freeSeat.id}`

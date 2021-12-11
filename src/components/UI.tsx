@@ -23,22 +23,20 @@ const UI: React.FunctionComponent<BoardProps<GameData>> = (props) => {
             ? `你的回合！`
             : `现在是 玩家 ${players[ctx.currentPlayer].name} 的回合`}
         </div>
-        {ctx.currentPlayer === props.playerID && (
-          <div>
-            {(gameData.actions[ctx.currentPlayer] || []).map((action, index) => (
-              <button
-                className="py-2 px-4 bg-green-500 mt-2 text-white font-semibold rounded-lg shadow-md focus:outline-none w-full"
-                key={index}
-                onClick={() => props.moves.handleEvent(index)}>
-                {action.type}
-              </button>
-            ))}
-          </div>
-        )}
+        <div>
+          {(gameData.actions[props.playerID] || []).map((action, index) => (
+            <button
+              className="py-2 px-4 bg-green-500 mt-2 text-white font-semibold rounded-lg shadow-md focus:outline-none w-full"
+              key={index}
+              onClick={() => props.moves.handleEvent(index)}>
+              {action.content ?? action.type}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="overflow-auto h-48 rounded-lg bg-gray-300 p-4">
         {[...gameData.messages].reverse().map((m) => (
-          <div key={m.timestamp}>
+          <div key={m.uuid}>
             <PlayerBadge player={gameData.players[m.owner]}></PlayerBadge> -{'>'} {m.content}
           </div>
         ))}

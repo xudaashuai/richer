@@ -13,7 +13,7 @@ const frontEndAppBuildPath = path.resolve(__dirname, '../../dist');
 server.app.use(serve(frontEndAppBuildPath));
 
 server.run({
-  port: 80,
+  port: process.env.NODE_ENV === 'production' ? 80 : 8080,
   callback: () => {
     server.app.use(
       async (ctx, next) =>

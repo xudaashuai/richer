@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react/display-name */
 import { LobbyClient } from 'boardgame.io/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { SERVER } from './constant';
 import LobbyPage from './pages/LobbyPage';
@@ -29,12 +29,23 @@ export const LobbyContext = React.createContext<{
   playerCredentials: ''
 });
 
+const useResize = () => {
+  const [size, setSize] = useState([0, 0]);
+  useEffect(() => {
+    const getSize = () => setSize([window.innerWidth, window.innerHeight]);
+    getSize();
+    window.addEventListener('resize', getSize);
+    return () => window.removeEventListener('resize', getSize);
+  }, []);
+  return size;
+};
 export default function App() {
   const [name, setName] = useState(localStorage.getItem('richer_name'));
   const [playerID, setPlayerID] = useState(localStorage.getItem('richer_playerID') || undefined);
   const [playerCredentials, setPlayerCredentials] = useState(
     localStorage.getItem('richer_playerCredentials') || undefined
   );
+  document.documentElement.style.fontSize = `${Math.floor(useResize()[0] / 42)}px`;
   return (
     <div className="max-w-4xl mx-auto h-full">
       <LobbyContext.Provider

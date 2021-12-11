@@ -44,20 +44,27 @@ const DefaultBoardNode: React.FunctionComponent<{
   }
   return (
     <div
-      className={`${tooltip && 'has-tooltip'} w-full h-full bg-${owner?.color || 'gray'}-${
+      className={`relative ${tooltip && 'has-tooltip'} w-full h-full bg-${owner?.color || 'gray'}-${
         ((node as BuildingNode).level || 1) * 100 + 0
       } rounded-xl`}>
-      <div className="text-center pt-2">{name}</div>
-      <div>
-        {players.map((p) => (
-          <PlayerBadge key={p.name} player={p}></PlayerBadge>
-        ))}
-      </div>
-      {tooltip && (
-        <div className="tooltip rounded shadow-lg p-1 bg-gray-100 left-24 top-0 w-40">
-          {tooltip}
+      <div className="top-0 left-0 table w-full h-full">
+        <div className="table-cell align-middle w-full h-full text-center text-gray-200 text-4xl font-bold">
+          {node.position}
         </div>
-      )}
+      </div>
+      <div className={`absolute top-0 left-0 w-full h-full`}>
+        <div className="text-center pt-2">{name}</div>
+        <div>
+          {players.map((p) => (
+            <PlayerBadge className="z-10 relative" key={p.name} player={p}></PlayerBadge>
+          ))}
+        </div>
+        {tooltip && (
+          <div className="tooltip rounded shadow-lg p-1 bg-gray-100 left-24 top-0 w-40">
+            {tooltip}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -69,7 +76,9 @@ const BuildingToolTip = ({ node }: { node: BuildingNode }) => {
     <>
       {owner && (
         <>
-          <div>老板: {owner.name}</div>
+          <div>
+            老板: <PlayerBadge player={owner} />
+          </div>
           <div>等级：{node.level}</div>
           <div>停留收费：{FEE[node.buildingType!][node.level]}</div>
           {node.level != node.maxLevel && <div>升级花费：{node.cost}</div>}
@@ -79,11 +88,19 @@ const BuildingToolTip = ({ node }: { node: BuildingNode }) => {
   );
 };
 
-export function PlayerBadge({ player }: { player: Player }) {
+export function PlayerBadge({
+  player,
+  playerName,
+  className
+}: {
+  player?: Player;
+  playerName?: string;
+  className?: string;
+}) {
   const { players } = React.useContext(MatchContext);
   return (
-    <span className={`bg-${player.color}-300 ring-1 px-3 rounded-full mx-0.5`}>
-      {players[player.name].name}
+    <span className={`${className} bg-${player.color}-300 ring-1 px-3 rounded-full mx-0.5 text-xs`}>
+      {players[playerName || player.name].name}
     </span>
   );
 }

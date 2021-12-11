@@ -7,6 +7,7 @@ import { Player } from './players';
 import { sendMessage, updatePlayerMoney, updatePlayerPosition } from './utils';
 export interface BuyAction {
   type: '购买';
+  content?: string;
   payload: {
     buildingType: BuildingType;
   };
@@ -14,14 +15,17 @@ export interface BuyAction {
 
 export interface UpgradeAction {
   type: '升级';
+  content?: string;
 }
 
 export interface EndTurnAction {
   type: '结束回合';
+  content?: string;
 }
 
 export interface MoveAction {
   type: '前进！';
+  content?: string;
 }
 
 export type Action = BuyAction | UpgradeAction | EndTurnAction | MoveAction;
@@ -60,6 +64,11 @@ function handleUpgradeAction(G: GameData, ctx: Ctx, player: Player, action: Upgr
   if (currentNode.level >= currentNode.maxLevel) {
     return;
   }
+  sendMessage(
+    `升级 ${player.position} 号土地的${currentNode.buildingType} 到 LV${currentNode.level + 1}`,
+    G,
+    ctx
+  );
   updatePlayerMoney(G, ctx, player, -currentNode.cost);
   currentNode.owner = player.name;
   currentNode.level += 1;
@@ -67,10 +76,18 @@ function handleUpgradeAction(G: GameData, ctx: Ctx, player: Player, action: Upgr
 }
 
 function handleMoveAction(G: GameData, ctx: Ctx, player: Player, action: MoveAction) {
+  const num = ctx.random.Die();
+  sendMessage(
+    `丢出了 ${num}，从 ${G.players[player.name].position} 前进到 ${
+      (G.players[player.name].position + num) % G.map.nodes.length
+    }`,
+    G,
+    ctx
+  );
   updatePlayerPosition(
     G,
     ctx,
     player,
-    (G.players[player.name].position + ctx.random.Die()) % G.map.nodes.length
+    (G.players[player.name].position + num) % G.map.nodes.length
   );
 }

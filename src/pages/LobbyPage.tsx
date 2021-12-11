@@ -61,18 +61,7 @@ function LobbyPage() {
       });
   };
   const enterMatch = (match: LobbyAPI.Match): void => navigate(`/match/${match.matchID}`);
-  const joinMatch = (match: LobbyAPI.Match): void => {
-    lobbyClient
-      .joinMatch('richer', match.matchID, {
-        playerID,
-        credentials: playerCredentials,
-        playerName: name
-      })
-      .then((res) => {
-        console.log(res);
-        navigate(`/match/${match.matchID}`);
-      });
-  };
+
   return (
     <div className="mt-4">
       <div className="text-center mb-4 text-xl font-bold">Hi {name}</div>
@@ -103,7 +92,7 @@ function LobbyPage() {
               className="mb-4"
               match={selfInMatch}
               onLeave={leaveMatch}
-              onJoin={joinMatch}
+              onJoin={enterMatch}
               onEnter={enterMatch}
             />
           </>
@@ -118,7 +107,7 @@ function LobbyPage() {
               key={match.matchID}
               match={match}
               onLeave={leaveMatch}
-              onJoin={joinMatch}
+              onJoin={enterMatch}
               onEnter={enterMatch}
             />
           ))}
