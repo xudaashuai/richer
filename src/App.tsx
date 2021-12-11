@@ -75,6 +75,7 @@ export default function App() {
           </Routes>
         </Router>
       </LobbyContext.Provider>
+      <div className="bg-green-300 bg-yellow-300 bg-green-100 bg-yellow-100 bg-green-200 bg-yellow-200 invisible"></div>
     </div>
   );
 }
