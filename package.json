@@ -24,7 +24,7 @@
     "dev": "cross-env NODE_ENV=development concurrently 'yarn start' 'yarn backend'",
     "start": "webpack serve",
     "backend": "cross-env NODE_ENV=development DEBUG=koa* nodemon src/server/server.ts",
-    "backend:prod": "sudo cross-env NODE_ENV=production ts-node src/server/server.ts",
+    "backend:prod": "cross-env NODE_ENV=production sudo ts-node src/server/server.ts",
     "backend:file": "cross-env NODE_ENV=production nodemon src/server/serverFrontent.ts",
     "build": "cross-env NODE_ENV=development webpack",
     "build:prod": "cross-env NODE_ENV=production webpack",
