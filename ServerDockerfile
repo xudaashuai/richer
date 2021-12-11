@@ -1,0 +1,7 @@
+FROM node:lts-alpine as builder
+
+WORKDIR /
+COPY / /
+RUN yarn
+CMD [ "yarn", "backend:prod" ]
+EXPOSE 8000

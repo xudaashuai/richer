@@ -54,6 +54,9 @@ function MatchPage() {
       setPlayerID
     ]);
     async function enterMatch() {
+      if (gameClient) {
+        return;
+      }
       try {
         const matchData = await lobbyClient.getMatch('richer', matchId);
         setMatchData(matchData);
@@ -100,6 +103,7 @@ function MatchPage() {
     }
     enterMatch();
   }, [
+    gameClient,
     lobbyClient,
     matchId,
     name,
