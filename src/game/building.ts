@@ -110,7 +110,7 @@ type Calculator = (
   node: BuildingNode,
   player: Player,
   buildingName?: BuildingName
-) => CalculatorResult | undefined;
+) => CalculatorResult;
 
 export interface CalculatorResult {
   money: number;
@@ -136,9 +136,6 @@ const defaultCostCalculator: Calculator = (
   player: Player,
   buildingName?: BuildingName
 ) => {
-  if (node.level >= BuindingConfigMap[buildingName ?? node.buildingName].maxLevel) {
-    return;
-  }
   return {
     money: node.level === 0 ? 400 : 100
   };
@@ -169,13 +166,13 @@ export function calculateBuyCost(
   )(G, ctx, node, player, buildingName);
 }
 
-export function calculateUpgradeCost(
+export const calculateUpgradeCost: Calculator = (
   G: GameData,
   ctx: Ctx,
   node: BuildingNode,
   player: Player,
   buildingName?: BuildingName
-) {
+) => {
   return (BuindingConfigMap[node.buildingName].upgradeCostCalculator || defaultCostCalculator)(
     G,
     ctx,
@@ -183,7 +180,7 @@ export function calculateUpgradeCost(
     player,
     buildingName
   );
-}
+};
 
 export function getEligibleBuildingNames(
   G: GameData,
@@ -202,13 +199,15 @@ export function isEligibleToUpgrade(
   G: GameData,
   ctx: Ctx,
   node: BuildingNode,
-  player: Player
+  player?: Player
 ): string | undefined {
   if (node.level >= BuindingConfigMap[node.buildingName].maxLevel) {
     return '已到达等级上限！';
   }
-  const result = calculateUpgradeCost(G, ctx, node, player);
-  if (result.money >= player.money) {
-    return '金钱不足';
+  if (player) {
+    const result = calculateUpgradeCost(G, ctx, node, player);
+    if (result.money >= player.money) {
+      return '金钱不足';
+    }
   }
 }

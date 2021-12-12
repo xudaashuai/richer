@@ -6,7 +6,8 @@ import {
   calculateFee,
   calculateUpgradeCost,
   CalculatorResult,
-  getEligibleBuildingNames
+  getEligibleBuildingNames,
+  isEligibleToUpgrade
 } from './building';
 import { BuildingNode, MapNodeType, SubwayNode } from './nodes';
 import { Player } from './players';
@@ -77,11 +78,13 @@ function handleArrivalBuildingNode(G: GameData, ctx: Ctx, node: BuildingNode, pl
 
   // 自己的地
   else if (owner.name === player.name) {
-    const result = calculateUpgradeCost(G, ctx, node, player);
-    if (player.money > result.money) {
-      actions.push({
-        type: '升级'
-      });
+    if (isEligibleToUpgrade(G, ctx, node, player)) {
+      const result = calculateUpgradeCost(G, ctx, node, player);
+      if (player.money > result.money) {
+        actions.push({
+          type: '升级'
+        });
+      }
     }
   }
 

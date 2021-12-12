@@ -4,7 +4,8 @@ import {
   calculateFee,
   calculateUpgradeCost,
   CalculatorResult,
-  getEligibleBuildingNames
+  getEligibleBuildingNames,
+  isEligibleToUpgrade
 } from '../game/building';
 import { BuildingNode, MapNode, MapNodeType } from '../game/nodes';
 import { Player } from '../game/players';
@@ -92,7 +93,9 @@ const BuildingToolTip = ({ node }: { node: BuildingNode }) => {
   let fee: CalculatorResult, upgradeCost: CalculatorResult, eligibleBuildingNames: BuildingName[];
   if (owner) {
     fee = calculateFee(G, ctx, node, player);
-    upgradeCost = calculateUpgradeCost(G, ctx, node, player);
+    if (isEligibleToUpgrade(G, ctx, node)) {
+      upgradeCost = calculateUpgradeCost(G, ctx, node, player);
+    }
   } else {
     eligibleBuildingNames = getEligibleBuildingNames(G, ctx, node, player);
   }
