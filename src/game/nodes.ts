@@ -1,9 +1,7 @@
-import { BuildingType } from './building';
+import { BuildingCategory, BuildingName } from './building';
 
 export enum MapNodeType {
-  工业 = '工业',
-  商业 = '商业',
-  住宅 = '住宅',
+  空地 = '空地',
   许愿屋 = '许愿屋',
   起点 = '起点',
   电视台 = '电视台',
@@ -12,7 +10,6 @@ export enum MapNodeType {
   EMPTY = 'EMPTY'
 }
 
-MapNodeType.工业;
 export interface BaseNode {
   owner: string | null;
   position: number;
@@ -20,12 +17,9 @@ export interface BaseNode {
 
 export type BuildingNode = BaseNode & {
   level: number;
-  maxLevel: number;
-  validBuildingTypes: BuildingType[];
-  cost: number;
-  fee: number;
-  buildingType?: BuildingType;
-  type: MapNodeType.工业 | MapNodeType.商业 | MapNodeType.住宅;
+  buildingName?: BuildingName;
+  type: MapNodeType.空地;
+  eligibleBuildingCategories: BuildingCategory[];
 };
 
 export interface MagicNode {}
@@ -55,6 +49,7 @@ export type SubwayNode = BaseNode &
   MagicNode & {
     news: [];
     type: MapNodeType.地铁;
+    nextPosition: number;
   };
 
 export type MapNode =
@@ -66,26 +61,16 @@ export type MapNode =
   | SubwayNode
   | { type: MapNodeType.EMPTY; position?: number };
 
-export const ValidBuildingTypes = {
-  [MapNodeType.工业]: [BuildingType.甜品工厂, BuildingType.木材厂, BuildingType.钢铁厂],
-  [MapNodeType.商业]: [BuildingType.甜品店, BuildingType.家具城, BuildingType.五金店],
-  [MapNodeType.住宅]: [BuildingType.蛋蛋屋, BuildingType.复古木屋, BuildingType.轻钢别墅]
-};
-
 export function createBuildingNode(
-  type: MapNodeType.工业 | MapNodeType.商业 | MapNodeType.住宅,
-  position: number,
-  maxLevel = 3
+  eligibleBuildingCategories: BuildingCategory[],
+  position: number
 ): MapNode {
   return {
-    type: type,
+    type: MapNodeType.空地,
     owner: null,
     level: 0,
-    maxLevel: maxLevel,
-    validBuildingTypes: ValidBuildingTypes[type],
     position,
-    cost: 300,
-    fee: 100
+    eligibleBuildingCategories
   };
 }
 
@@ -124,11 +109,12 @@ export function createNewsNode(position: number): MapNode {
   };
 }
 
-export function createSubwayNode(position: number): MapNode {
+export function createSubwayNode(position: number, nextPosition: number): MapNode {
   return {
     type: MapNodeType.地铁,
     owner: null,
     news: [],
-    position
+    position,
+    nextPosition
   };
 }

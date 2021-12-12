@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LobbyContext } from '../App';
 
 const LoginPage: React.FunctionComponent = () => {
-  const { lobbyClient, setName } = React.useContext(LobbyContext);
+  const { setName } = React.useContext(LobbyContext);
   const [newName, setNewName] = React.useState(localStorage.getItem('richer_name') || '');
   const navigate = useNavigate();
   const enterLobby = () => {
@@ -14,8 +14,8 @@ const LoginPage: React.FunctionComponent = () => {
     }
   };
   return (
-    <div className="flex w-full h-full items-center">
-      <div className="flex flex-col flex-1 items-center w-2/3">
+    <div className="flex w-full h-full items-center justify-center">
+      <div className="flex flex-col items-center w-2/3">
         <input
           type="text"
           className="mt-1 block w-full"

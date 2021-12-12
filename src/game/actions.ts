@@ -1,6 +1,11 @@
 import { Ctx } from 'boardgame.io';
-import { map } from 'lodash';
-import { BuildingType } from './building';
+import { handleThrough } from './arrival';
+import {
+  BuildingName,
+  calculateBuyCost,
+  calculateUpgradeCost,
+  isEligibleToUpgrade
+} from './building';
 import { GameData } from './game';
 import { BuildingNode } from './nodes';
 import { Player } from './players';
@@ -9,7 +14,7 @@ export interface BuyAction {
   type: '购买';
   content?: string;
   payload: {
-    buildingType: BuildingType;
+    buildingName: BuildingName;
   };
 }
 
@@ -26,6 +31,10 @@ export interface EndTurnAction {
 export interface MoveAction {
   type: '前进！';
   content?: string;
+  payload?: {
+    triggerThrough?: boolean;
+    position?: number;
+  };
 }
 
 export type Action = BuyAction | UpgradeAction | EndTurnAction | MoveAction;
@@ -47,47 +56,57 @@ export function handleAction(G: GameData, ctx: Ctx, player: Player, action: Acti
   }
   G.actions[player.name] = [];
 }
+
 function handleBuyAction(G: GameData, ctx: Ctx, player: Player, action: BuyAction) {
   const currentNode = G.map.nodes[player.position] as BuildingNode;
-
-  sendMessage(`购买了 ${player.position} 号土地 建造了${action.payload.buildingType}`, G, ctx);
-  updatePlayerMoney(G, ctx, player, -currentNode.cost);
+  const result = calculateBuyCost(G, ctx, currentNode, player, action.payload.buildingName);
+  if (result.money >= player.money) {
+    return;
+  }
+  sendMessage(`购买了 ${player.position} 号土地 建造了${action.payload.buildingName}`, G, ctx);
+  updatePlayerMoney(G, ctx, player, -result.money);
   currentNode.owner = player.name;
   currentNode.level += 1;
-  currentNode.buildingType = action.payload.buildingType;
-  currentNode.cost *= 1.2;
+  currentNode.buildingName = action.payload.buildingName;
 }
 
 function handleUpgradeAction(G: GameData, ctx: Ctx, player: Player, action: UpgradeAction) {
   const currentNode = G.map.nodes[player.position] as BuildingNode;
 
-  if (currentNode.level >= currentNode.maxLevel) {
+  const ineligibleReason = isEligibleToUpgrade(G, ctx, currentNode, player);
+  if (ineligibleReason) {
+    sendMessage(ineligibleReason, G, ctx, player.name);
     return;
   }
+  const result = calculateUpgradeCost(G, ctx, currentNode, player);
+
   sendMessage(
-    `升级 ${player.position} 号土地的${currentNode.buildingType} 到 LV${currentNode.level + 1}`,
+    `升级 ${player.position} 号土地的${currentNode.buildingName} 到 LV${currentNode.level + 1}`,
     G,
-    ctx
+    ctx,
+    player.name
   );
-  updatePlayerMoney(G, ctx, player, -currentNode.cost);
+  updatePlayerMoney(G, ctx, player, -result.money);
   currentNode.owner = player.name;
   currentNode.level += 1;
-  currentNode.cost *= 1.2;
 }
 
 function handleMoveAction(G: GameData, ctx: Ctx, player: Player, action: MoveAction) {
-  const num = ctx.random.Die();
-  sendMessage(
-    `丢出了 ${num}，从 ${G.players[player.name].position} 前进到 ${
-      (G.players[player.name].position + num) % G.map.nodes.length
-    }`,
-    G,
-    ctx
-  );
-  updatePlayerPosition(
-    G,
-    ctx,
-    player,
-    (G.players[player.name].position + num) % G.map.nodes.length
-  );
+  let newPosition: number;
+  if (action.payload?.position !== undefined) {
+    newPosition = action.payload?.position;
+    sendMessage(`传送到 ${newPosition}`, G, ctx);
+  } else {
+    const num = 99; // ctx.random.Die() + ctx.random.Die();
+    newPosition = (G.players[player.name].position + num) % G.map.nodes.length;
+    sendMessage(
+      `丢出了 ${num}，从 ${G.players[player.name].position} 前进到 ${newPosition}`,
+      G,
+      ctx
+    );
+    for (let i = 1; i <= num; i++) {
+      handleThrough(G, ctx, player, (G.players[player.name].position + i) % G.map.nodes.length);
+    }
+  }
+  updatePlayerPosition(G, ctx, player, newPosition);
 }

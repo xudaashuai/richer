@@ -1,7 +1,10 @@
 /* eslint-disable */
 
 module.exports = {
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  content: ['./src/**/*.{js,jsx,ts,tsx,html}'],
+  safelist: ['green', 'yellow', 'red', 'purple', 'blue'].flatMap((color) =>
+    new Array(9).fill(0).map((_, index) => `bg-${color}-${(index + 1) * 100}`)
+  ),
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {}

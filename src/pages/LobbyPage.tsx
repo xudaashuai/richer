@@ -63,7 +63,7 @@ function LobbyPage() {
   const enterMatch = (match: LobbyAPI.Match): void => navigate(`/match/${match.matchID}`);
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 px-2">
       <div className="text-center mb-4 text-xl font-bold">Hi {name}</div>
       <div className="flex mb-4">
         <select
