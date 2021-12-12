@@ -78,7 +78,7 @@ function handleArrivalBuildingNode(G: GameData, ctx: Ctx, node: BuildingNode, pl
 
   // 自己的地
   else if (owner.name === player.name) {
-    if (isEligibleToUpgrade(G, ctx, node, player) !== undefined) {
+    if (isEligibleToUpgrade(G, ctx, node, player) === undefined) {
       const result = calculateUpgradeCost(G, ctx, node, player);
       if (player.money > result.money) {
         actions.push({
