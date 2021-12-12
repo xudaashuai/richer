@@ -125,7 +125,7 @@ const defaultFeeCalculator: Calculator = (
 ) => {
   return {
     money:
-      BuindingConfigMap[buildingName ?? node.buildingName].baseFee * Math.pow(2, node.level - 1)
+      BuindingConfigMap[buildingName ?? node.buildingName].baseFee * Math.pow(3, node.level - 1)
   };
 };
 
