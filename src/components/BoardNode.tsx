@@ -93,7 +93,7 @@ const BuildingToolTip = ({ node }: { node: BuildingNode }) => {
   let fee: CalculatorResult, upgradeCost: CalculatorResult, eligibleBuildingNames: BuildingName[];
   if (owner) {
     fee = calculateFee(G, ctx, node, player);
-    if (isEligibleToUpgrade(G, ctx, node)) {
+    if (isEligibleToUpgrade(G, ctx, node) === undefined) {
       upgradeCost = calculateUpgradeCost(G, ctx, node, player);
     }
   } else {
