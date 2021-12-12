@@ -97,7 +97,7 @@ function handleMoveAction(G: GameData, ctx: Ctx, player: Player, action: MoveAct
     newPosition = action.payload?.position;
     sendMessage(`传送到 ${newPosition}`, G, ctx);
   } else {
-    const num = 99; // ctx.random.Die() + ctx.random.Die();
+    const num = ctx.random.Die() + ctx.random.Die();
     newPosition = (G.players[player.name].position + num) % G.map.nodes.length;
     sendMessage(
       `丢出了 ${num}，从 ${G.players[player.name].position} 前进到 ${newPosition}`,
